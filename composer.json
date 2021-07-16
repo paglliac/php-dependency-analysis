@@ -1,5 +1,6 @@
 {
     "name": "paglliac/dependency-analysis",
+    "description": "Library for static analysis modules dependencies in php projects",
     "type": "library",
     "license": "MIT",
     "authors": [
