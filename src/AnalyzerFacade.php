@@ -4,11 +4,13 @@
 namespace DependencyAnalysis;
 
 
+use DependencyAnalysis\Config\PhpFileConfigParser;
+
 class AnalyzerFacade
 {
     public function run(string $configPath): bool
     {
-        $configParser = new ConfigParser();
+        $configParser = new PhpFileConfigParser();
         $config = $configParser->parse($configPath);
 
         $analyzer = new Analyzer();

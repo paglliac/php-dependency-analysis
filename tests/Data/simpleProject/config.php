@@ -6,5 +6,5 @@ return [
         '\Application' => ['\Domain'],
         '\Infrastructure' => ['\Domain']
     ],
-    'path' => __DIR__ . '/simpleProject'
+    'path' => __DIR__
 ];
