@@ -1,6 +1,6 @@
 <?php
 
-namespace DependencyAnalysis\Tests;
+namespace DependencyAnalysis\Tests\Functional;
 
 
 use DependencyAnalysis\AnalyzerFacade;
