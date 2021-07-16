@@ -1,0 +1,21 @@
+{
+    "name": "paglliac/dependency-analysis",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kir Apukhtin",
+            "email": "paglliac@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "DependencyAnalysis\\": "src/",
+            "DependencyAnalysis\\Tests\\": "tests/"
+        }
+    },
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
