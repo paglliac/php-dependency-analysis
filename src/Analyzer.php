@@ -5,8 +5,8 @@ namespace DependencyAnalysis;
 
 class Analyzer
 {
-    public function analyze(Config $config): AnalyzeResult
+    public function analyze(Config $config): AnalysisResult
     {
-        return new AnalyzeResult();
+        return new AnalysisResult();
     }
 }

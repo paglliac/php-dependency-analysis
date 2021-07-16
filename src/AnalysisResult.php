@@ -4,7 +4,7 @@
 namespace DependencyAnalysis;
 
 
-class AnalyzeResult
+class AnalysisResult
 {
     private $success = true;
 
