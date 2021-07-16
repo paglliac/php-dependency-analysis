@@ -12,7 +12,8 @@ class RunAnalysisTest extends TestCase
     {
         $facade = new AnalyzerFacade();
         $result = $facade->run(__DIR__ . '/../Data/simpleProject/config.php');
-        $this->assertTrue($result, 'Result of analysis simpleProject should be true');
+        $this->assertTrue($result->isSuccess(), 'Result of analysis simpleProject should be true');
+        $this->assertEquals(5, $result->analyzedFilesAmount());
     }
 
 }

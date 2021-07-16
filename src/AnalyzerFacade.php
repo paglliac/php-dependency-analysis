@@ -8,15 +8,14 @@ use DependencyAnalysis\Config\PhpFileConfigParser;
 
 class AnalyzerFacade
 {
-    public function run(string $configPath): bool
+    public function run(string $configPath): AnalysisResult
     {
         $configParser = new PhpFileConfigParser();
         $config = $configParser->parse($configPath);
 
         $analyzer = new Analyzer();
-        $result = $analyzer->analyze($config);
 
-        return $result->isSuccess();
+        return $analyzer->analyze($config);
     }
 
 }

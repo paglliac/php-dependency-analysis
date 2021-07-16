@@ -4,16 +4,20 @@ namespace DependencyAnalysis;
 
 
 use DependencyAnalysis\Config\Config;
-use RuntimeException;
 
 class Analyzer
 {
     public function analyze(Config $config): AnalysisResult
     {
-        if($config){
-            return new AnalysisResult();
+        $analysisResult = new AnalysisResult();
+
+        $fileIterator = new FileIterator($config->getPath());
+
+        foreach ($fileIterator->next() as $file){
+            $analysisResult->addAnalyzedFile();
         }
 
-        throw new RuntimeException('Invalid config');
+
+        return $analysisResult;
     }
 }
