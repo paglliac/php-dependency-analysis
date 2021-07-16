@@ -6,7 +6,7 @@ namespace DependencyAnalysis\Tests;
 use DependencyAnalysis\AnalyzerFacade;
 use PHPUnit\Framework\TestCase;
 
-class RunAnalysisTest extends TestCas
+class RunAnalysisTest extends TestCase
 {
     public function testAnalyzerRun()
     {

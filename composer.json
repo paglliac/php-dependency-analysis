@@ -18,5 +18,10 @@
     "require": {},
     "require-dev": {
         "phpunit/phpunit": "^9.5"
+    },
+    "scripts": {
+        "test": [
+            "vendor/phpunit/phpunit/phpunit --no-configuration ./tests"
+        ]
     }
 }
