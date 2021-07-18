@@ -6,13 +6,15 @@ namespace DependencyAnalysis;
 
 class AnalysisResult
 {
-    private $analyzedFilesAmount;
+    private array $correctFiles;
 
-    private $success = true;
+    private array $incorrectFiles;
 
-    public function addAnalyzedFile(): void
+    private bool $success = true;
+
+    public function addCorrectFile(ParsedClass $parsedClass): void
     {
-        $this->analyzedFilesAmount++;
+        $this->correctFiles[] = $parsedClass;
     }
 
     public function isSuccess(): bool
@@ -22,6 +24,16 @@ class AnalysisResult
 
     public function analyzedFilesAmount(): int
     {
-        return $this->analyzedFilesAmount;
+        return count($this->correctFiles);
+    }
+
+    public function addIncorrectFile(ParsedClass $parsedClass, string $error)
+    {
+        $this->incorrectFiles[] = [
+            'file' => $parsedClass,
+            'error' => $error
+        ];
+
+        $this->success = false;
     }
 }
