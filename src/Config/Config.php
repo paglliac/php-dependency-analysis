@@ -3,19 +3,12 @@
 namespace DependencyAnalysis\Config;
 
 use RuntimeException;
-use function PHPUnit\Framework\directoryExists;
 
 class Config
 {
-    /**
-     * @var array
-     */
-    private $dependencyGraph;
+    private array $dependencyGraph;
 
-    /**
-     * @var string
-     */
-    private $path;
+    private string $path;
 
     public function __construct(string $path, array $dependencyGraph)
     {

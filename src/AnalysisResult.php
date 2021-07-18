@@ -27,7 +27,7 @@ class AnalysisResult
         return count($this->correctFiles);
     }
 
-    public function addIncorrectFile(ParsedClass $parsedClass, string $error)
+    public function addIncorrectFile(ParsedClass $parsedClass, string $error): void
     {
         $this->incorrectFiles[] = [
             'file' => $parsedClass,

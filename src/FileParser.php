@@ -41,9 +41,7 @@ class FileParser
                 }
             }
 
-            $parsedClass = new ParsedClass($filePath, $className, $uses);
-
-            return  $parsedClass;
+            return new ParsedClass($filePath, $className, $uses);
         } catch (Error $error) {
             throw new RuntimeException("Parse error: {$error->getMessage()}\n");
         }

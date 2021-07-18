@@ -4,6 +4,7 @@
 namespace DependencyAnalysis;
 
 
+use Generator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
@@ -11,10 +12,7 @@ use SplFileInfo;
 
 class FileIterator
 {
-    /**
-     * @var string
-     */
-    private $path;
+    private string $path;
 
     public function __construct(string $path)
     {
@@ -24,9 +22,9 @@ class FileIterator
     }
 
     /**
-     * @return \Generator|SplFileInfo[]
+     * @return Generator|SplFileInfo[]
      */
-    public function next()
+    public function next(): Generator
     {
         $it = new RecursiveDirectoryIterator($this->path);
 
@@ -46,9 +44,6 @@ class FileIterator
         return;
     }
 
-    /**
-     * @param string $path
-     */
     public function assertDirectoryExists(string $path): void
     {
         if (!is_dir($path)) {
