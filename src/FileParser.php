@@ -34,10 +34,10 @@ class FileParser
 
             foreach ($ast->stmts as $stmt) {
                 if($stmt instanceof Use_){
-                    $uses[] = implode('\\', $stmt->uses[0]->name->parts);
+                    $uses[] = '\\' . implode('\\', $stmt->uses[0]->name->parts);
                 }
                 if($stmt instanceof Class_){
-                    $className = implode('\\', $ast->name->parts) . '\\' . $stmt->name->name;
+                    $className = '\\' . implode('\\', $ast->name->parts) . '\\' . $stmt->name->name;
                 }
             }
 

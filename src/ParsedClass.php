@@ -19,4 +19,18 @@ class ParsedClass
         $this->uses = $uses;
     }
 
+    public function getClassName(): string
+    {
+        return $this->className;
+    }
+
+    public function haveUses(): bool
+    {
+        return !empty($this->uses);
+    }
+
+    public function getUses(): array
+    {
+        return $this->uses;
+    }
 }

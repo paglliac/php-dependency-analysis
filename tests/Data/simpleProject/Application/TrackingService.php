@@ -1,7 +1,7 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 
-namespace simpleProject\Application;
+namespace Application;
 
 
 use Domain\Cargo;

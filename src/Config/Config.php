@@ -6,11 +6,11 @@ use RuntimeException;
 
 class Config
 {
-    private array $dependencyGraph;
+    private DependencyGraph $dependencyGraph;
 
     private string $path;
 
-    public function __construct(string $path, array $dependencyGraph)
+    public function __construct(string $path, DependencyGraph $dependencyGraph)
     {
         $this->dependencyGraph = $dependencyGraph;
 
@@ -18,7 +18,7 @@ class Config
         $this->path = $path;
     }
 
-    public function getDependencyGraph(): array
+    public function getDependencyGraph(): DependencyGraph
     {
         return $this->dependencyGraph;
     }

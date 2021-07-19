@@ -19,7 +19,7 @@ class ConfigParserTest extends TestCase
             '\Domain' => null,
             '\Application' => ['\Domain'],
             '\Infrastructure' => ['\Domain']
-        ], $config->getDependencyGraph());
+        ], $config->getDependencyGraph()->toArray());
 
     }
 

@@ -19,7 +19,7 @@ class PhpFileConfigParser implements ConfigParser
 
         $this->assertKeysExistsAndNotEmpty(['dependencies', 'path'], $configArray);
 
-        return new Config($configArray['path'], $configArray['dependencies']);
+        return new Config($configArray['path'], new DependencyGraph($configArray['dependencies']));
     }
 
     /**
