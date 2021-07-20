@@ -68,7 +68,7 @@ $configPath = $options['c'] ?? $options['config'];
 $result = (new \DependencyAnalysis\AnalyzerFacade())->run($configPath);
 $exitCode = 0;
 
-if ($result === false) {
+if (!$result->isSuccess()) {
     $exitCode = 1;
 }
 
