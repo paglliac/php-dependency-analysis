@@ -50,22 +50,26 @@ if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
     die(1);
 }
 
-$options = getopt('', array('prepend:'));
-
-if (isset($options['prepend'])) {
-    require $options['prepend'];
-}
-
-unset($options);
-
 require PHPUNIT_COMPOSER_INSTALL;
 
-// TODO need to check is config parameter presented, its required
-$result = (new \DependencyAnalysis\AnalyzerFacade())->run(getopt('c:')['c']);
+$options = getopt('c:', ['config:']);
+
+if (!isset($options['c']) && !isset($options['config'])) {
+    fwrite(
+        STDERR,
+        'You need to pass the config file path by -c {path} or --config={path}' . PHP_EOL
+    );
+
+    die(1);
+}
+
+
+$configPath = $options['c'] ?? $options['config'];
+$result = (new \DependencyAnalysis\AnalyzerFacade())->run($configPath);
 $exitCode = 0;
 
 if ($result === false) {
-    $exitCode = 127;
+    $exitCode = 1;
 }
 
 exit($exitCode);
