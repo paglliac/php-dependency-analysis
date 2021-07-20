@@ -14,11 +14,21 @@ class FileIterator
 {
     private string $path;
 
-    public function __construct(string $path)
+    /**
+     * @var array|string[]
+     */
+    private array $allowedExtensions;
+
+    /**
+     * @param string $path
+     * @param array|string[] $allowedExtensions
+     */
+    public function __construct(string $path, array $allowedExtensions)
     {
         $this->assertDirectoryExists($path);
 
         $this->path = $path;
+        $this->allowedExtensions = $allowedExtensions;
     }
 
     /**
@@ -34,7 +44,7 @@ class FileIterator
                 continue;
             }
 
-            if($file->getExtension() !== 'php'){
+            if (!in_array($file->getExtension(), $this->allowedExtensions)) {
                 continue;
             }
 

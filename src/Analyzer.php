@@ -12,8 +12,8 @@ class Analyzer
     {
         $analysisResult = new AnalysisResult();
 
-        $fileIterator = new FileIterator($config->getPath());
-        $fileParser = new FileParser();
+        $fileIterator = new FileIterator($config->getPath(), $config->getAllowedExtensions());
+        $fileParser = new FileParser($config->getPhpVersion());
 
         foreach ($fileIterator->next() as $file) {
             $parsedClass = $fileParser->parseFile($file->getPath() . '/' . $file->getFilename());

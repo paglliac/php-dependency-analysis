@@ -16,9 +16,9 @@ class FileParser
 {
     private Parser $parser;
 
-    public function __construct()
+    public function __construct(int $phpVersion)
     {
-        $this->parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $this->parser = (new ParserFactory)->create($phpVersion);
     }
 
     public function parseFile(string $filePath): ?ParsedClass
