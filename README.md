@@ -11,7 +11,7 @@ PHP DA oriented on analysis of project component dependencies
 Install library using composer 
 
 ```
-TODO  php composer.phar require 
+composer require paglliac/dependency-analysis
 ```
 
 Add configuration file `config.php` to root of your project :
@@ -33,5 +33,5 @@ return [
 Run dependency validation:
 
 ```
-/vendor/bin/php-da validate -c config.php
+/vendor/bin/php-da -c config.php
 ```
