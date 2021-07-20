@@ -60,7 +60,7 @@ class Config
     {
         $allowed = [ParserFactory::PREFER_PHP7, ParserFactory::PREFER_PHP5, ParserFactory::ONLY_PHP7, ParserFactory::ONLY_PHP5];
 
-        if (in_array($phpVersion, $allowed)) {
+        if (!in_array($phpVersion, $allowed)) {
             throw new RuntimeException(sprintf("PhpVersion should have one of available values: %s. Got %s", implode(', ', $allowed), $phpVersion));
         }
 

@@ -23,11 +23,11 @@ class PhpFileConfigParser implements ConfigParser
         $config = new Config($configArray['path'], new DependencyGraph($configArray['dependencies'], $failOnNonPresentedNameSpace));
 
         if (array_key_exists('php_version', $configArray)) {
-            $config->setPhpVersion($config['php_version']);
+            $config->setPhpVersion($configArray['php_version']);
         }
 
         if (array_key_exists('allowed_extensions', $configArray)) {
-            $config->setAllowedVersions($config['allowed_extensions']);
+            $config->setAllowedVersions($configArray['allowed_extensions']);
         }
 
         return $config;
