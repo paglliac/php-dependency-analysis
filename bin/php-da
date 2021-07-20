@@ -66,6 +66,9 @@ if (!isset($options['c']) && !isset($options['config'])) {
 
 $configPath = $options['c'] ?? $options['config'];
 $result = (new \DependencyAnalysis\AnalyzerFacade())->run($configPath);
+
+(new \DependencyAnalysis\AnalysisResultPrinter())->print($result);
+
 $exitCode = 0;
 
 if (!$result->isSuccess()) {
