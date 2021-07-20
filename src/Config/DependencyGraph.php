@@ -9,10 +9,12 @@ use DependencyAnalysis\ParsedClass;
 class DependencyGraph
 {
     private array $dependencies;
+    private bool $skipNonPresentedNameSpace;
 
-    public function __construct(array $dependencies)
+    public function __construct(array $dependencies, bool $failOnNonPresentedNameSpace)
     {
         $this->dependencies = $dependencies;
+        $this->skipNonPresentedNameSpace = !$failOnNonPresentedNameSpace;
     }
 
     public function toArray(): array
@@ -22,19 +24,46 @@ class DependencyGraph
 
     public function isSatisfy(ParsedClass $parsedClass): bool
     {
+        if (empty($this->dependencies)) {
+            return true;
+        }
+
         if (!$parsedClass->haveUses()) {
             return true;
         }
 
-        foreach ($this->dependencies as $namespace => $dependency) {
-            if (strpos($parsedClass->getClassName(), $namespace) !== false) {
-                foreach ($parsedClass->getUses() as $use) {
-                    foreach ($dependency as $item) {
-                        if (strpos($use, $item) !== false) {
-                            return true;
-                        }
-                    }
-                }
+        $validDependencies = $this->findPackageDependencies($parsedClass->getClassName());
+
+        if (is_null($validDependencies)) {
+            return $this->skipNonPresentedNameSpace;
+        }
+
+
+        foreach ($parsedClass->getUses() as $use) {
+            if (!$this->isUseSatisfyValidDependencies($use, $validDependencies)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function findPackageDependencies(string $className): ?array
+    {
+        foreach ($this->dependencies as $namespace => $dep) {
+            if (strpos($className, $namespace) === 0) {
+                return $dep;
+            }
+        }
+
+        return null;
+    }
+
+    private function isUseSatisfyValidDependencies(string $use, array $validDependencies): bool
+    {
+        foreach ($validDependencies as $item) {
+            if (strpos($use, $item) === 0) {
+                return true;
             }
         }
 

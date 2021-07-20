@@ -19,7 +19,8 @@ class PhpFileConfigParser implements ConfigParser
 
         $this->assertKeysExistsAndNotEmpty(['dependencies', 'path'], $configArray);
 
-        $config = new Config($configArray['path'], new DependencyGraph($configArray['dependencies']));
+        $failOnNonPresentedNameSpace = array_key_exists('fail_on_non_presented_namespace', $configArray) ? $configArray['fail_on_non_presented_namespace'] : true;
+        $config = new Config($configArray['path'], new DependencyGraph($configArray['dependencies'], $failOnNonPresentedNameSpace));
 
         if (array_key_exists('php_version', $configArray)) {
             $config->setPhpVersion($config['php_version']);
@@ -36,9 +37,9 @@ class PhpFileConfigParser implements ConfigParser
      * @param string[] $keys
      * @param array $configArray
      *
+     * @return void
      * @throws RuntimeException
      *
-     * @return void
      */
     private function assertKeysExistsAndNotEmpty(array $keys, array $configArray): void
     {
