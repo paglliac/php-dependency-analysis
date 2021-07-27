@@ -6,6 +6,7 @@ namespace DependencyAnalysis;
 
 use DependencyAnalysis\Config\PhpFileConfigParser;
 use DependencyAnalysis\Result\AnalysisResult;
+use DependencyAnalysis\Result\ResultPrinterFactory;
 
 class AnalyzerFacade
 {
@@ -15,8 +16,12 @@ class AnalyzerFacade
         $config = $configParser->parse($configPath);
 
         $analyzer = new Analyzer();
+        $result = $analyzer->analyze($config);
 
-        return $analyzer->analyze($config);
+        $resultPrinter = (new ResultPrinterFactory())->make($config);
+        $resultPrinter->print($result);
+
+        return $result;
     }
 
 }

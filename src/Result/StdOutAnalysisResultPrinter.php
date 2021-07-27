@@ -4,9 +4,9 @@
 namespace DependencyAnalysis\Result;
 
 
-class StdOutAnalysisResultPrinter
+class StdOutAnalysisResultPrinter implements AnalysisResultPrinter
 {
-    public function print(AnalysisResult $analysisResult)
+    public function print(AnalysisResult $analysisResult): void
     {
         if ($analysisResult->isSuccess()) {
             fwrite(

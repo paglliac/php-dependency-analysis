@@ -2,6 +2,7 @@
 
 namespace DependencyAnalysis\Config;
 
+use DependencyAnalysis\Result\StdOutAnalysisResultPrinter;
 use PhpParser\ParserFactory;
 use RuntimeException;
 
@@ -17,6 +18,10 @@ class Config
      * @var array | string[]
      */
     private array $allowedExtensions = ['php'];
+
+    private string $output = StdOutAnalysisResultPrinter::class;
+
+    private string $outputPath;
 
     public function __construct(string $path, DependencyGraph $dependencyGraph)
     {
@@ -70,5 +75,27 @@ class Config
     public function setAllowedVersions(array $allowedExtensions): void
     {
         $this->allowedExtensions = $allowedExtensions;
+    }
+
+    public function setOutput(string $output): void
+    {
+        // TODO need to add check of output parameter is instance of Result Printer
+
+        $this->output = $output;
+    }
+
+    public function getOutput(): string
+    {
+        return $this->output;
+    }
+
+    public function setOutputPath(string $outputPath): void
+    {
+        $this->outputPath = $outputPath;
+    }
+
+    public function getOutputPath(): string
+    {
+        return $this->outputPath;
     }
 }

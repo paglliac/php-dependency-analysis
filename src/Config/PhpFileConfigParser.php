@@ -30,6 +30,14 @@ class PhpFileConfigParser implements ConfigParser
             $config->setAllowedVersions($configArray['allowed_extensions']);
         }
 
+        if (array_key_exists('output', $configArray)) {
+            $config->setOutput($configArray['output']);
+        }
+
+        if (array_key_exists('output_path', $configArray)) {
+            $config->setOutputPath($configArray['output_path']);
+        }
+
         return $config;
     }
 
