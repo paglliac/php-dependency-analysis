@@ -48,7 +48,7 @@ class DependencyGraphTest extends TestCase
                 ],
                 false
             ],
-            'null dependency' => [
+            'null dependency use another package' => [
                 '\Domain\Tracker',
                 [
                     '\Domain' => null,
@@ -57,9 +57,20 @@ class DependencyGraphTest extends TestCase
                 ],
                 [
                     '\Infrastructure\Domain\ClassA',
-                    '\Domain\ClassB',
                 ],
                 false
+            ],
+            'null dependency use same package' => [
+                '\Domain\Tracker',
+                [
+                    '\Domain' => null,
+                    '\Application' => ['\Domain'],
+                    '\Infrastructure' => ['\Domain']
+                ],
+                [
+                    '\Domain\ClassA',
+                ],
+                true
             ]
         ];
     }
