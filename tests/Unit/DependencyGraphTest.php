@@ -47,6 +47,19 @@ class DependencyGraphTest extends TestCase
                     '\Domain\ClassB',
                 ],
                 false
+            ],
+            'null dependency' => [
+                '\Domain\Tracker',
+                [
+                    '\Domain' => null,
+                    '\Application' => ['\Domain'],
+                    '\Infrastructure' => ['\Domain']
+                ],
+                [
+                    '\Infrastructure\Domain\ClassA',
+                    '\Domain\ClassB',
+                ],
+                false
             ]
         ];
     }

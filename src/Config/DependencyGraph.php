@@ -52,7 +52,7 @@ class DependencyGraph
     {
         foreach ($this->dependencies as $namespace => $dep) {
             if (strpos($className, $namespace) === 0) {
-                return $dep;
+                return is_null($dep) ? [] : $dep;
             }
         }
 
