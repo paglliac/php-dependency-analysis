@@ -5,6 +5,7 @@ namespace DependencyAnalysis;
 
 
 use DependencyAnalysis\Config\PhpFileConfigParser;
+use DependencyAnalysis\Result\AnalysisResult;
 
 class AnalyzerFacade
 {

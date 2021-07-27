@@ -1,10 +1,10 @@
 <?php
 
 
-namespace DependencyAnalysis;
+namespace DependencyAnalysis\Result;
 
 
-class AnalysisResultPrinter
+class StdOutAnalysisResultPrinter
 {
     public function print(AnalysisResult $analysisResult)
     {

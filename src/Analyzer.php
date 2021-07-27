@@ -5,6 +5,7 @@ namespace DependencyAnalysis;
 
 use DependencyAnalysis\Config\Config;
 use DependencyAnalysis\Config\DependencyGraph;
+use DependencyAnalysis\Result\AnalysisResult;
 
 class Analyzer
 {

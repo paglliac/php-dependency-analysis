@@ -1,8 +1,10 @@
 <?php
 
 
-namespace DependencyAnalysis;
+namespace DependencyAnalysis\Result;
 
+
+use DependencyAnalysis\ParsedClass;
 
 class AnalysisResult
 {
