@@ -4,7 +4,7 @@
 namespace DependencyAnalysis\Config;
 
 
-use DependencyAnalysis\ParsedClass;
+use DependencyAnalysis\Parser\ParsedClass;
 
 class DependencyGraph
 {

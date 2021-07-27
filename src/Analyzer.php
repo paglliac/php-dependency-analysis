@@ -5,6 +5,8 @@ namespace DependencyAnalysis;
 
 use DependencyAnalysis\Config\Config;
 use DependencyAnalysis\Config\DependencyGraph;
+use DependencyAnalysis\Parser\FileParser;
+use DependencyAnalysis\Parser\ParsedClass;
 use DependencyAnalysis\Result\AnalysisResult;
 
 class Analyzer

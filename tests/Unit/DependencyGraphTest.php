@@ -5,7 +5,7 @@ namespace DependencyAnalysis\Tests\Unit;
 
 
 use DependencyAnalysis\Config\DependencyGraph;
-use DependencyAnalysis\ParsedClass;
+use DependencyAnalysis\Parser\ParsedClass;
 use PHPUnit\Framework\TestCase;
 
 class DependencyGraphTest extends TestCase

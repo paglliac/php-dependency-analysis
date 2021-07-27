@@ -4,7 +4,7 @@
 namespace DependencyAnalysis\Result;
 
 
-use DependencyAnalysis\ParsedClass;
+use DependencyAnalysis\Parser\ParsedClass;
 
 class AnalysisResult
 {
