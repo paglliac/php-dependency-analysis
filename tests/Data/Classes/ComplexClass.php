@@ -26,6 +26,8 @@ class ComplexClass
                 return new \Application\TrackingService2();
             } elseif ($service) {
                 return new \Domain\Cargo();
+            } else {
+                return new \Domain\Cargo();
             }
 
             throw new \RuntimeException();

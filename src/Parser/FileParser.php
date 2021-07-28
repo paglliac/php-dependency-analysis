@@ -63,7 +63,7 @@ class FileParser
             } elseif ($stmt instanceof Stmt\If_) {
                 $this->processStmts($stmt->stmts ?? []);
                 $this->processStmts($stmt->elseifs ?? []);
-                $this->processStmts($stmt->else ?? []);
+                $this->processStmts($stmt->else->stmts ?? []);
             } elseif ($stmt instanceof Stmt\Return_) {
                 $this->processExpression($stmt->expr);
             } elseif ($stmt instanceof Use_) {
