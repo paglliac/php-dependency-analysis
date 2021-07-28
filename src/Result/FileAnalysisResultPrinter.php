@@ -4,7 +4,7 @@
 namespace DependencyAnalysis\Result;
 
 
-class FileAnalysisResultPrinter implements AnalysisResultPrinter
+class FileAnalysisResultPrinter extends StdOutAnalysisResultPrinter implements AnalysisResultPrinter
 {
     private string $outputFilePath;
 
@@ -13,13 +13,19 @@ class FileAnalysisResultPrinter implements AnalysisResultPrinter
         $this->outputFilePath = $outputFilePath;
     }
 
-
     public function print(AnalysisResult $analysisResult): void
     {
-        if ($analysisResult->isSuccess()) {
-            file_put_contents($this->outputFilePath, 'All dependencies inside your project satisfy the approved dependency graph');
-        } else {
-            file_put_contents($this->outputFilePath, 'You have problems with dependencies in your project');
-        }
+        $this->clearFile();
+        parent::print($analysisResult);
+    }
+
+    protected function writeLine(string $line): void
+    {
+        file_put_contents($this->outputFilePath, $line, FILE_APPEND);
+    }
+
+    private function clearFile()
+    {
+        file_put_contents($this->outputFilePath, '');
     }
 }

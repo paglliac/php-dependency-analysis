@@ -8,12 +8,22 @@ use PHPUnit\Framework\TestCase;
 
 class RunAnalysisTest extends TestCase
 {
-    public function testAnalyzerRun()
+    public function testSuccessAnalyzerRun()
     {
         $facade = new AnalyzerFacade();
         $result = $facade->run(__DIR__ . '/../Data/simpleProject/config.php');
-        $this->assertTrue($result->isSuccess(), 'Result of analysis simpleProject should be true');
+        $this->assertTrue($result->isSuccess());
         $this->assertEquals(4, $result->analyzedFilesAmount());
+    }
+
+    public function testAnalyzerRunWithErrors()
+    {
+        $facade = new AnalyzerFacade();
+        $result = $facade->run(__DIR__ . '/../Data/brokenProject/config.php');
+        $this->assertFalse($result->isSuccess());
+        $this->assertEquals(4, $result->analyzedFilesAmount());
+        $this->assertEquals(2, $result->countIncorrectFiles());
+        $this->assertEquals(3, $result->countErrors());
     }
 
     public function testRunCommand()

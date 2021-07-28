@@ -8,11 +8,11 @@ use DependencyAnalysis\Parser\ParsedClass;
 
 class AnalysisResult
 {
-    private array $correctFiles;
+    private array $correctFiles = [];
 
-    private array $incorrectFiles;
+    private array $incorrectFiles = [];
 
-    private bool $success = true;
+    private int $errorsAmount = 0;
 
     public function addCorrectFile(ParsedClass $parsedClass): void
     {
@@ -21,12 +21,12 @@ class AnalysisResult
 
     public function isSuccess(): bool
     {
-        return $this->success;
+        return count($this->incorrectFiles) === 0;
     }
 
     public function analyzedFilesAmount(): int
     {
-        return count($this->correctFiles);
+        return count($this->correctFiles) + count($this->incorrectFiles);
     }
 
     public function addIncorrectFile(ParsedClass $parsedClass, array $errors): void
@@ -36,6 +36,21 @@ class AnalysisResult
             'errors' => $errors
         ];
 
-        $this->success = false;
+        $this->errorsAmount += count($errors);
+    }
+
+    public function getErrorsAmount(): array
+    {
+        return $this->incorrectFiles;
+    }
+
+    public function countIncorrectFiles(): int
+    {
+        return count($this->incorrectFiles);
+    }
+
+    public function countErrors(): int
+    {
+        return $this->errorsAmount;
     }
 }
