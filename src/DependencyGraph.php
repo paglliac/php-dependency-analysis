@@ -1,7 +1,7 @@
 <?php
 
 
-namespace DependencyAnalysis\Config;
+namespace DependencyAnalysis;
 
 
 use DependencyAnalysis\Parser\ParsedClass;
@@ -22,30 +22,36 @@ class DependencyGraph
         return $this->dependencies;
     }
 
-    public function isSatisfy(ParsedClass $parsedClass): bool
+    public function isSatisfy(ParsedClass $parsedClass): array
     {
         if (empty($this->dependencies)) {
-            return true;
+            return [];
         }
 
         if (!$parsedClass->haveUses()) {
-            return true;
+            return [];
         }
 
         $validDependencies = $this->findPackageDependencies($parsedClass->getClassName());
 
         if (is_null($validDependencies)) {
-            return $this->skipNonPresentedNameSpace;
-        }
-
-
-        foreach ($parsedClass->getUses() as $use) {
-            if (!$this->isUseSatisfyValidDependencies($use, $validDependencies)) {
-                return false;
+            if ($this->skipNonPresentedNameSpace) {
+                return [];
+            } else {
+                return ["Dependencies not presented for {$parsedClass->getClassName()} in dependency graph"];
             }
         }
 
-        return true;
+
+        $errors = [];
+
+        foreach ($parsedClass->getUses() as $use) {
+            if (!$this->isUseSatisfyValidDependencies($use, $validDependencies)) {
+                $errors[] = ["Class {$parsedClass->getClassName()} using class {$use} which not satisfy dependency graph"];
+            }
+        }
+
+        return $errors;
     }
 
     public function findPackageDependencies(string $className): ?array

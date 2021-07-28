@@ -4,6 +4,7 @@
 namespace DependencyAnalysis\Config;
 
 
+use DependencyAnalysis\DependencyGraph;
 use RuntimeException;
 
 class PhpFileConfigParser implements ConfigParser

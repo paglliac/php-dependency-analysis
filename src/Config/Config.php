@@ -2,6 +2,7 @@
 
 namespace DependencyAnalysis\Config;
 
+use DependencyAnalysis\DependencyGraph;
 use DependencyAnalysis\Result\StdOutAnalysisResultPrinter;
 use PhpParser\ParserFactory;
 use RuntimeException;

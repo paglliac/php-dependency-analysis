@@ -7,6 +7,7 @@ namespace DependencyAnalysis\Tests\Data\Classes;
 use Domain\SomePlace;
 use Exception;
 use Infrastructure\ShipImplementation;
+use PhpParser\Node\Expr\Clone_;
 
 class ComplexClass
 {
@@ -32,6 +33,10 @@ class ComplexClass
 
             throw new \RuntimeException();
         };
+
+        foreach ([1, 2, 3] as $item) {
+            $someValue = new Clone_();
+        }
 
         throw new Exception();
     }

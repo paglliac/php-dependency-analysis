@@ -28,7 +28,7 @@ class ParserTest extends TestCase
 
 
         $this->assertEquals('\DependencyAnalysis\Tests\Data\Classes\ComplexClass', $parsedClass->getClassName());
-        $this->assertCount(13, $parsedClass->getUses());
+        $this->assertCount(14, $parsedClass->getUses());
 //        $this->assertNotContains('\\Domain\\SomePlace', $parsedClass->getUses());
     }
 

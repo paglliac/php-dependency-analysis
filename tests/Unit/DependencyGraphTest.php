@@ -4,7 +4,7 @@
 namespace DependencyAnalysis\Tests\Unit;
 
 
-use DependencyAnalysis\Config\DependencyGraph;
+use DependencyAnalysis\DependencyGraph;
 use DependencyAnalysis\Parser\ParsedClass;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +20,7 @@ class DependencyGraphTest extends TestCase
                     '\SomeClass',
                     '\SomeAnotherClass'
                 ],
-                true
+                0
             ],
             'simple valid dependency graph' => [
                 '\Application\TrackingService',
@@ -33,7 +33,7 @@ class DependencyGraphTest extends TestCase
                     '\Domain\ClassA',
                     '\Domain\ClassB',
                 ],
-                true
+                0
             ],
             'dependency include valid sub namespace' => [
                 '\Application\TrackingService',
@@ -46,7 +46,7 @@ class DependencyGraphTest extends TestCase
                     '\Infrastructure\Domain\ClassA',
                     '\Domain\ClassB',
                 ],
-                false
+                1
             ],
             'null dependency use another package' => [
                 '\Domain\Tracker',
@@ -58,7 +58,7 @@ class DependencyGraphTest extends TestCase
                 [
                     '\Infrastructure\Domain\ClassA',
                 ],
-                false
+                1
             ],
             'null dependency use same package' => [
                 '\Domain\Tracker',
@@ -70,7 +70,7 @@ class DependencyGraphTest extends TestCase
                 [
                     '\Domain\ClassA',
                 ],
-                true
+                0
             ]
         ];
     }
@@ -81,17 +81,16 @@ class DependencyGraphTest extends TestCase
      * @param string $className
      * @param array $dependencyGraphArray
      * @param array $usesArray
-     * @param bool $expectedResult
+     * @param int $expectedErrorsAmount
      */
-    public function testEmptyDependencyGraphSuccess(string $className, array $dependencyGraphArray, array $usesArray, bool $expectedResult)
+    public function testEmptyDependencyGraphSuccess(string $className, array $dependencyGraphArray, array $usesArray, int $expectedErrorsAmount)
     {
         $graph = new DependencyGraph($dependencyGraphArray, false);
 
         $parsedClass = new ParsedClass('phpFile.php', $className, $usesArray);
 
-        $result = $graph->isSatisfy($parsedClass);
-
-        $this->assertEquals($expectedResult, $result);
+        $errors = $graph->isSatisfy($parsedClass);
+        $this->assertCount($expectedErrorsAmount, $errors);
     }
 
 }

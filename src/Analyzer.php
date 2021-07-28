@@ -4,7 +4,6 @@ namespace DependencyAnalysis;
 
 
 use DependencyAnalysis\Config\Config;
-use DependencyAnalysis\Config\DependencyGraph;
 use DependencyAnalysis\Parser\FileParser;
 use DependencyAnalysis\Parser\ParsedClass;
 use DependencyAnalysis\Result\AnalysisResult;
@@ -25,10 +24,11 @@ class Analyzer
                 continue;
             }
 
-            if ($error = $this->isFileSatisfyConfig($parsedClass, $config->getDependencyGraph())) {
+            $errors = $this->isFileSatisfyConfig($parsedClass, $config->getDependencyGraph());
+            if (count($errors) === 0) {
                 $analysisResult->addCorrectFile($parsedClass);
             } else {
-                $analysisResult->addIncorrectFile($parsedClass, $error);
+                $analysisResult->addIncorrectFile($parsedClass, $errors);
             }
         }
 
@@ -36,7 +36,7 @@ class Analyzer
         return $analysisResult;
     }
 
-    private function isFileSatisfyConfig(ParsedClass $parsedClass, DependencyGraph $dependencyGraph): bool
+    private function isFileSatisfyConfig(ParsedClass $parsedClass, DependencyGraph $dependencyGraph): array
     {
         return $dependencyGraph->isSatisfy($parsedClass);
     }
