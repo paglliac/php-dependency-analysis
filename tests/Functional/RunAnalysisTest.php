@@ -21,6 +21,7 @@ class RunAnalysisTest extends TestCase
         $facade = new AnalyzerFacade();
         $result = $facade->run(__DIR__ . '/../Data/brokenProject/config.php');
         $this->assertFalse($result->isSuccess());
+
         $this->assertEquals(4, $result->analyzedFilesAmount());
         $this->assertEquals(2, $result->countIncorrectFiles());
         $this->assertEquals(3, $result->countErrors());

@@ -18,6 +18,10 @@ class ResultPrinterFactory
             return new FileAnalysisResultPrinter($config->getOutputPath());
         }
 
+        if ($config->getOutput() === NullResultPrinter::class) {
+            return new NullResultPrinter();
+        }
+
         throw new \RuntimeException("Unexpected result printer {$config->getOutput()}");
     }
 }
