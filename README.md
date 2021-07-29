@@ -14,6 +14,8 @@ Install library using composer
 composer require paglliac/dependency-analysis
 ```
 
+### Configuration
+
 Add configuration file `config.php` to root of your project :
 
 ```
@@ -76,6 +78,8 @@ return [
 ];
 ```
 
+### Running
+
 Run dependency validation:
 
 ```
@@ -87,7 +91,10 @@ Options:
 Arguments:
 - `[files filter]` list of files for analysis, it's usefull to use in CI combine with --diff 
 
-Example of output:
+
+
+### Example of output
+
 ```
 Have been analyzed 4 files
 You have dependency problems in 2 files in your project:
