@@ -47,4 +47,24 @@ class RunAnalysisTest extends TestCase
 
         $this->assertEquals(0, $retval);
     }
+
+    public function testRunCommandBrokenProject()
+    {
+        $retval = null;
+        $output = null;
+
+        exec(__DIR__ . '/../../bin/php-da -c ' . __DIR__ . '/../Data/brokenProject/config.php', $output, $retval);
+
+        $this->assertEquals(1, $retval);
+    }
+
+    public function testRunCommandBrokenProjectValidFile()
+    {
+        $retval = null;
+        $output = null;
+
+        exec(__DIR__ . '/../../bin/php-da -c ' . __DIR__ . '/../Data/brokenProject/config.php /Domain/ShipInterface.php', $output, $retval);
+
+        $this->assertEquals(0, $retval);
+    }
 }

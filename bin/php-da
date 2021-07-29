@@ -52,7 +52,8 @@ if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
 
 require PHPUNIT_COMPOSER_INSTALL;
 
-$options = getopt('c:', ['config:']);
+$endIndex = 0;
+$options = getopt('c:', ['config:'], $endIndex);
 
 if (!isset($options['c']) && !isset($options['config'])) {
     fwrite(
@@ -63,9 +64,10 @@ if (!isset($options['c']) && !isset($options['config'])) {
     die(1);
 }
 
+$arguments = array_slice($argv, $endIndex);
 
 $configPath = $options['c'] ?? $options['config'];
-$result = (new \DependencyAnalysis\AnalyzerFacade())->run($configPath);
+$result = (new \DependencyAnalysis\AnalyzerFacade())->run($configPath, $arguments);
 
 
 $exitCode = 0;
