@@ -27,6 +27,17 @@ class RunAnalysisTest extends TestCase
         $this->assertEquals(3, $result->countErrors());
     }
 
+    public function testAnalyzerRunOnBrokenProjectSomeFiles()
+    {
+        $facade = new AnalyzerFacade();
+        $result = $facade->run(__DIR__ . '/../Data/brokenProject/config.php', ['/Domain/ShipInterface.php']);
+        $this->assertTrue($result->isSuccess());
+
+        $this->assertEquals(1, $result->analyzedFilesAmount());
+        $this->assertEquals(0, $result->countIncorrectFiles());
+        $this->assertEquals(0, $result->countErrors());
+    }
+
     public function testRunCommand()
     {
         $retval = null;

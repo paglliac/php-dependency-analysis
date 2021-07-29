@@ -42,9 +42,6 @@ class Config
         return $this->path;
     }
 
-    /**
-     * @param string $path
-     */
     public function assertDirectoryExists(string $path): void
     {
         if (!is_dir($path)) {
