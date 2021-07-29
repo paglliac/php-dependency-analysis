@@ -18,7 +18,7 @@ composer require paglliac/dependency-analysis
 
 Add configuration file `config.php` to root of your project :
 
-```
+```php
 return [
     /**
      * REQUIRED
