@@ -46,6 +46,23 @@ return [
 
     /**
      * OPTIONAL
+     *
+     * Make available to use vendor dependencies in whole project
+     *
+     * true - all project classes can use vendor dependencies
+     * false - all project can not use vendor dependencies
+     */
+    'skip_vendor_dir' => true,
+
+    /**
+     * REQUIRED if skip_vendor_dir is true
+     *
+     * Relative path to vendor dir
+     */
+    'vendor_dir' => './vendor',
+
+    /**
+     * OPTIONAL
      * Flag that define how to do when some files placed in namespaces not presented in Dependencies Graph
      *
      * true - mark class as having incorrect dependencies
