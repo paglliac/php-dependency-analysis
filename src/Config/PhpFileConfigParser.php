@@ -21,7 +21,18 @@ class PhpFileConfigParser implements ConfigParser
         $this->assertKeysExistsAndNotEmpty(['dependencies', 'path'], $configArray);
 
         $failOnNonPresentedNameSpace = array_key_exists('fail_on_non_presented_namespace', $configArray) ? $configArray['fail_on_non_presented_namespace'] : true;
-        $config = new Config($configArray['path'], new DependencyGraph($configArray['dependencies'], $failOnNonPresentedNameSpace));
+
+        $skipVendorDir = true;
+        if (array_key_exists('skip_vendor_dir', $configArray)) {
+            $skipVendorDir = $configArray['skip_vendor_dir'];
+        }
+
+        $vendorDir = '';
+        if (array_key_exists('vendor_dir', $configArray)) {
+            $vendorDir = $configArray['vendor_dir'];
+        }
+
+        $config = new Config($configArray['path'], new DependencyGraph($configArray['dependencies'], $failOnNonPresentedNameSpace, $skipVendorDir, $vendorDir));
 
         if (array_key_exists('php_version', $configArray)) {
             $config->setPhpVersion($configArray['php_version']);
@@ -38,6 +49,7 @@ class PhpFileConfigParser implements ConfigParser
         if (array_key_exists('output_path', $configArray)) {
             $config->setOutputPath($configArray['output_path']);
         }
+
 
         return $config;
     }

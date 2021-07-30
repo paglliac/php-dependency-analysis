@@ -5,16 +5,22 @@ namespace DependencyAnalysis;
 
 
 use DependencyAnalysis\Parser\ParsedClass;
+use ReflectionClass;
+use ReflectionException;
 
 class DependencyGraph
 {
     private array $dependencies;
     private bool $skipNonPresentedNameSpace;
+    private bool $skipVendorDir;
+    private string $vendorDir;
 
-    public function __construct(array $dependencies, bool $failOnNonPresentedNameSpace)
+    public function __construct(array $dependencies, bool $failOnNonPresentedNameSpace, bool $skipVendorDir, string $vendorDir = '')
     {
         $this->dependencies = $dependencies;
         $this->skipNonPresentedNameSpace = !$failOnNonPresentedNameSpace;
+        $this->skipVendorDir = $skipVendorDir;
+        $this->vendorDir = $vendorDir;
     }
 
     public function toArray(): array
@@ -37,9 +43,9 @@ class DependencyGraph
         if (is_null($validDependencies)) {
             if ($this->skipNonPresentedNameSpace) {
                 return [];
-            } else {
-                return ["Dependencies not presented for {$parsedClass->getClassName()} in dependency graph"];
             }
+
+            return ["Dependencies not presented for {$parsedClass->getClassName()} in dependency graph"];
         }
 
 
@@ -73,6 +79,27 @@ class DependencyGraph
             }
         }
 
-        return false;
+        if (!$this->skipVendorDir) {
+            return false;
+        }
+
+        return $this->isVendorClass($use);
+    }
+
+    private function isVendorClass(string $use): bool
+    {
+        try {
+            $refClass = new ReflectionClass($use);
+
+            if (strpos($refClass->getFileName(), $this->vendorDir) !== false) {
+                return true;
+            }
+           
+            return false;
+
+        } catch (ReflectionException $e) {
+            return false;
+            // TODO need to define not only class but and namespaces
+        }
     }
 }

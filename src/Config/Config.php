@@ -24,6 +24,10 @@ class Config
 
     private string $outputPath;
 
+    private bool $skipVendorDirClasses;
+
+    private string $vendorDir;
+
     public function __construct(string $path, DependencyGraph $dependencyGraph)
     {
         $this->dependencyGraph = $dependencyGraph;
@@ -96,4 +100,25 @@ class Config
     {
         return $this->outputPath;
     }
+
+    public function isSkipVendorDirClasses(): bool
+    {
+        return $this->skipVendorDirClasses;
+    }
+
+    public function setSkipVendorDirClasses(bool $skipVendorDirClasses): void
+    {
+        $this->skipVendorDirClasses = $skipVendorDirClasses;
+    }
+
+    public function getVendorDir(): string
+    {
+        return $this->vendorDir;
+    }
+
+    public function setVendorDir(string $vendorDir): void
+    {
+        $this->vendorDir = $vendorDir;
+    }
+
 }
