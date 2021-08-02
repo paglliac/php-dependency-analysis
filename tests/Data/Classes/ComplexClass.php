@@ -8,6 +8,7 @@ use Domain\SomePlace;
 use Exception;
 use Infrastructure\ShipImplementation;
 use PhpParser\Node\Expr\Clone_;
+use PhpParser\Node\Scalar\MagicConst\Class_;
 
 class ComplexClass
 {
@@ -37,6 +38,21 @@ class ComplexClass
         foreach ([1, 2, 3] as $item) {
             $someValue = new Clone_();
         }
+
+        $classA = new class() {
+            public function method()
+            {
+                $someValue = new Class_();
+
+                return new class() {
+                    public function method()
+                    {
+
+                    }
+                };
+            }
+
+        };
 
         throw new Exception();
     }

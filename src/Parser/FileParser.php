@@ -124,12 +124,14 @@ class FileParser
         $this->processClass($expr->class);
     }
 
-    private function processClass(Name $class): void
+    private function processClass($class): void
     {
         if ($class instanceof FullyQualified) {
             $this->pushToUses($class->parts);
         } elseif ($class instanceof Name) {
             $this->pushToUses($class->parts, true);
+        } elseif ($class instanceof Class_) {
+            $this->processStmts($class->stmts);
         }
     }
 
