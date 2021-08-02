@@ -27,12 +27,19 @@ class PhpFileConfigParser implements ConfigParser
             $skipVendorDir = $configArray['skip_vendor_dir'];
         }
 
-        $vendorDir = '';
+        // This is default vendor dir for project which use analyzer through composer dependencies
+        $vendorDir = __DIR__ . '/../../../../';
+
         if (array_key_exists('vendor_dir', $configArray)) {
             $vendorDir = $configArray['vendor_dir'];
         }
 
-        $config = new Config($configArray['path'], new DependencyGraph($configArray['dependencies'], $failOnNonPresentedNameSpace, $skipVendorDir, $vendorDir));
+        $validForAll = [];
+        if (array_key_exists('valid_for_all', $configArray)) {
+            $validForAll = $configArray['valid_for_all'];
+        }
+
+        $config = new Config($configArray['path'], new DependencyGraph($configArray['dependencies'], $failOnNonPresentedNameSpace, $skipVendorDir, $vendorDir, $validForAll));
 
         if (array_key_exists('php_version', $configArray)) {
             $config->setPhpVersion($configArray['php_version']);

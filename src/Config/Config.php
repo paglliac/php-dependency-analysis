@@ -3,7 +3,6 @@
 namespace DependencyAnalysis\Config;
 
 use DependencyAnalysis\DependencyGraph;
-use DependencyAnalysis\Result\StdOutAnalysisResultPrinter;
 use PhpParser\ParserFactory;
 use RuntimeException;
 
@@ -20,7 +19,7 @@ class Config
      */
     private array $allowedExtensions = ['php'];
 
-    private string $output = StdOutAnalysisResultPrinter::class;
+    private string $output;
 
     private string $outputPath;
 

@@ -67,4 +67,10 @@ class RunAnalysisTest extends TestCase
 
         $this->assertEquals(0, $retval);
     }
+
+    public function testProjectItself()
+    {
+        $result = (new AnalyzerFacade())->run(__DIR__ . '/../../dependency_config.php');
+        $this->assertTrue($result->isSuccess());
+    }
 }

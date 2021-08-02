@@ -47,7 +47,7 @@ class FileParser
 
             return new ParsedClass($filePath, $this->process->className, array_unique($this->process->uses));
         } catch (Error $error) {
-            throw new RuntimeException("Parse error: {$error->getMessage()}\n");
+            throw new RuntimeException("Parse error: {$error->getMessage()}\n", $error->getCode(), $error);
         }
     }
 
@@ -93,8 +93,12 @@ class FileParser
     }
 
 
-    private function processExpression(Expr $expr)
+    private function processExpression(?Expr $expr): void
     {
+        if (!$expr) {
+            return;
+        }
+
         if ($expr instanceof New_) {
             $this->processNew_($expr);
         }
