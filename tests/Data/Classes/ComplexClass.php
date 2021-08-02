@@ -54,6 +54,15 @@ class ComplexClass
 
         };
 
+        try {
+            switch (true) {
+                case true:
+                    return new \PhpParser\Node\Expr\Assign();
+            }
+        } catch (\Throwable $e) {
+            return new \PhpParser\Node\Expr\Array_();
+        }
+
         throw new Exception();
     }
 

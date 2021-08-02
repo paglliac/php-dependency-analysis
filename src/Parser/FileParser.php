@@ -58,7 +58,7 @@ class FileParser
         }
 
         foreach ($stmts as $stmt) {
-            if ($stmt instanceof Class_) {
+            if ($stmt instanceof Class_ && !$this->process->className) {
                 $this->process->className = '\\' . implode('\\', $this->process->namespaceParts) . '\\' . $stmt->name->name;
             } elseif ($stmt instanceof Stmt\If_) {
                 $this->processStmts($stmt->stmts ?? []);
@@ -71,6 +71,16 @@ class FileParser
                 $this->pushToImports($stmt->uses[0]->name->parts);
             } elseif ($stmt instanceof New_) {
                 $this->processClass($stmt->class);
+            } else if ($stmt instanceof Stmt\TryCatch) {
+                $this->processStmts($stmt->stmts);
+                $this->processStmts($stmt->catches);
+                $this->processStmts([$stmt->finally]);
+            } elseif ($stmt instanceof Stmt\Switch_) {
+                $this->processExpression($stmt->cond);
+                $this->processStmts($stmt->cases);
+            } elseif ($stmt instanceof Stmt\Case_) {
+                $this->processExpression($stmt->cond);
+                $this->processStmts($stmt->stmts);
             } elseif ($stmt instanceof ClassMethod) {
                 foreach ($stmt->params as $param) {
                     if ($param->type instanceof FullyQualified) {
@@ -112,6 +122,7 @@ class FileParser
                 $this->processExpression($expr->expr);
             }
         }
+
 
         if ($expr instanceof Expr\Closure) {
             $this->processStmts($expr->stmts);
