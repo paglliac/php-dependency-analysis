@@ -1,8 +1,6 @@
 <?php
 
-
 namespace DependencyAnalysis\Parser;
-
 
 use Error;
 use PhpParser\Node\Expr;
@@ -52,7 +50,6 @@ use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use RuntimeException;
 
-
 //use \PhpParser\Node\Stmt\Enum_;
 //use \PhpParser\Node\Stmt\EnumCase;
 //use \PhpParser\Node\Stmt\GroupUse;
@@ -67,7 +64,7 @@ use RuntimeException;
 
 class FileParser
 {
-    private Parser $parser;
+    private Parser         $parser;
 
     private ParsingProcess $process;
 
@@ -81,15 +78,20 @@ class FileParser
         try {
             $this->process = new ParsingProcess();
 
-            $ast = $this->parser->parse(file_get_contents($filePath))[0];
+            $ast = $this->parser->parse(file_get_contents($filePath));
+            $firstNode = $ast[0] ?? null;
 
-            if (!$ast instanceof Namespace_) {
+            if (!$firstNode) {
                 return null;
             }
 
-            $this->process->namespaceParts = $ast->name->parts;
+            if (!$firstNode instanceof Namespace_) {
+                return null;
+            }
 
-            $this->processStmts($ast->stmts);
+            $this->process->namespaceParts = $firstNode->name->parts;
+
+            $this->processStmts($firstNode->stmts);
 
             return new ParsedClass($filePath, $this->process->className, array_unique($this->process->uses));
         } catch (Error $error) {
@@ -132,73 +134,77 @@ class FileParser
                 }
 
                 $this->processArgs($stmt->args);
-            } else if ($stmt instanceof TryCatch) {
-                $this->processStmts($stmt->stmts);
-                $this->processStmts($stmt->catches);
-                $this->processStmts([$stmt->finally]);
-            } elseif ($stmt instanceof Catch_) {
-                $this->processNamesList(...$stmt->types);
-                $this->processStmts($stmt->stmts);
-            } elseif ($stmt instanceof Switch_) {
-                $this->processExpression($stmt->cond);
-                $this->processStmts($stmt->cases);
-            } elseif ($stmt instanceof Case_) {
-                $this->processExpression($stmt->cond);
-                $this->processStmts($stmt->stmts);
-            } elseif ($stmt instanceof ClassMethod) {
-                foreach ($stmt->params as $param) {
-                    $this->processName($param->type);
+            } else {
+                if ($stmt instanceof TryCatch) {
+                    $this->processStmts($stmt->stmts);
+                    $this->processStmts($stmt->catches);
+                    $this->processStmts([$stmt->finally]);
+                } elseif ($stmt instanceof Catch_) {
+                    $this->processNamesList(...$stmt->types);
+                    $this->processStmts($stmt->stmts);
+                } elseif ($stmt instanceof Switch_) {
+                    $this->processExpression($stmt->cond);
+                    $this->processStmts($stmt->cases);
+                } elseif ($stmt instanceof Case_) {
+                    $this->processExpression($stmt->cond);
+                    $this->processStmts($stmt->stmts);
+                } elseif ($stmt instanceof ClassMethod) {
+                    foreach ($stmt->params as $param) {
+                        if ($param->type instanceof Name) {
+                            $this->processName($param->type);
+                        }
+                    }
+                    $this->processVariableType($stmt->returnType);
+                    $this->processStmts($stmt->stmts);
+                } elseif ($stmt instanceof Throw_) {
+                    $this->processExpression($stmt->expr);
+                } elseif ($stmt instanceof Expression) {
+                    $this->processExpression($stmt->expr);
+                } elseif (
+                    $stmt instanceof Break_
+                    || $stmt instanceof Continue_
+                    || $stmt instanceof Declare_
+                    || $stmt instanceof DeclareDeclare
+                    || $stmt instanceof Global_
+                    || $stmt instanceof Goto_
+                    || $stmt instanceof HaltCompiler
+                    || $stmt instanceof InlineHTML
+                    || $stmt instanceof Label
+                    || $stmt instanceof Nop
+                    || $stmt instanceof Unset_
+                ) {
+                    continue;
+                } elseif ($stmt instanceof Const_) {
+                    $this->processConsts($stmt->consts);
+                } elseif ($stmt instanceof ClassConst) {
+                    $this->processConsts($stmt->consts);
+                } elseif ($stmt instanceof Echo_) {
+                    $this->processExpressionsList(...$stmt->exprs);
+                } elseif ($stmt instanceof Do_) {
+                    $this->processConsts($stmt->stmts);
+                } elseif ($stmt instanceof Finally_) {
+                    $this->processConsts($stmt->stmts);
+                } elseif ($stmt instanceof For_) {
+                    $this->processExpressionsList(...$stmt->cond);
+                    $this->processExpressionsList(...$stmt->init);
+                    $this->processExpressionsList(...$stmt->loop);
+
+                    $this->processConsts($stmt->stmts);
+                } elseif ($stmt instanceof Foreach_) {
+                    $this->processExpression($stmt->expr);
+
+                    $this->processConsts($stmt->stmts);
+                } elseif ($stmt instanceof Function_) {
+                    $this->processParamsList(...$stmt->params);
+                    $this->processVariableType($stmt->returnType);
+                    $this->processStmts($stmt->stmts);
+                } elseif ($stmt instanceof While_) {
+                    $this->processExpression($stmt->cond);
+                    $this->processStmts($stmt->stmts);
+                } elseif ($stmt instanceof Interface_) {
+                    $this->processStmts($stmt->stmts);
+                    $this->processNamesList(...$stmt->extends);
                 }
-                $this->processVariableType($stmt->returnType);
-                $this->processStmts($stmt->stmts);
-            } elseif ($stmt instanceof Throw_) {
-                $this->processExpression($stmt->expr);
-            } elseif ($stmt instanceof Expression) {
-                $this->processExpression($stmt->expr);
-            } elseif (
-                $stmt instanceof Break_
-                || $stmt instanceof Continue_
-                || $stmt instanceof Declare_
-                || $stmt instanceof DeclareDeclare
-                || $stmt instanceof Global_
-                || $stmt instanceof Goto_
-                || $stmt instanceof HaltCompiler
-                || $stmt instanceof InlineHTML
-                || $stmt instanceof Label
-                || $stmt instanceof Nop
-                || $stmt instanceof Unset_
-            ) {
-                continue;
-            } elseif ($stmt instanceof Const_) {
-                $this->processConsts($stmt->consts);
-            } elseif ($stmt instanceof ClassConst) {
-                $this->processConsts($stmt->consts);
-            } elseif ($stmt instanceof Echo_) {
-                $this->processExpressionsList(...$stmt->exprs);
-            } elseif ($stmt instanceof Do_) {
-                $this->processConsts($stmt->stmts);
-            } elseif ($stmt instanceof Finally_) {
-                $this->processConsts($stmt->stmts);
-            } elseif ($stmt instanceof For_) {
-                $this->processExpressionsList(...$stmt->cond);
-                $this->processExpressionsList(...$stmt->init);
-                $this->processExpressionsList(...$stmt->loop);
-
-                $this->processConsts($stmt->stmts);
-            } elseif ($stmt instanceof Foreach_) {
-                $this->processExpression($stmt->expr);
-
-                $this->processConsts($stmt->stmts);
-            } elseif ($stmt instanceof Function_) {
-                $this->processParamsList(...$stmt->params);
-                $this->processVariableType($stmt->returnType);
-                $this->processStmts($stmt->stmts);
-            } elseif ($stmt instanceof While_) {
-                $this->processExpression($stmt->cond);
-                $this->processStmts($stmt->stmts);
-            } elseif ($stmt instanceof Interface_) {
-                $this->processStmts($stmt->stmts);
-                $this->processNamesList(...$stmt->extends);
             }
 
             if (isset($stmt->stmts)) {
@@ -234,11 +240,9 @@ class FileParser
             }
         }
 
-
         if ($expr instanceof Closure) {
             $this->processStmts($expr->stmts);
         }
-
     }
 
     private function processNew_(New_ $expr): void
@@ -262,13 +266,12 @@ class FileParser
         }
     }
 
-    private function processName(Name $name): void
+    private function processName(?Name $name): void
     {
         if ($name instanceof FullyQualified) {
             $this->pushToUses($name->parts);
         } elseif ($name instanceof Name) {
             $this->pushToUses($name->parts, true);
-
         }
     }
 
@@ -307,10 +310,10 @@ class FileParser
                 return;
             } elseif (substr($use, -strlen($parts[0]), strlen($parts[0])) === $parts[0]) {
                 $this->process->uses[] = $use . '\\' . implode('\\', array_slice($parts, 1));
+
                 return;
             }
         }
-
 
         $this->process->uses[] = '\\' . implode('\\', array_merge($this->process->namespaceParts, $parts));
     }
@@ -348,7 +351,7 @@ class FileParser
     /**
      * @param Name|null $variableType
      */
-    private function processVariableType(?Name $variableType): void
+    private function processVariableType($variableType): void
     {
         if ($variableType instanceof NullableType) {
             if ($variableType->type instanceof Name) {
