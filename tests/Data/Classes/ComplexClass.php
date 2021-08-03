@@ -10,7 +10,7 @@ use Infrastructure\ShipImplementation;
 use PhpParser\Node\Expr\Clone_;
 use PhpParser\Node\Scalar\MagicConst\Class_;
 
-class ComplexClass
+class ComplexClass extends \SplFileInfo implements Domain\ShipInterface
 {
 
 
@@ -37,6 +37,7 @@ class ComplexClass
 
         foreach ([1, 2, 3] as $item) {
             $someValue = new Clone_();
+            break 1;
         }
 
         $classA = new class() {
