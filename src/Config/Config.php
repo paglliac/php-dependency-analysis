@@ -25,7 +25,7 @@ class Config
 
     private bool $skipVendorDirClasses;
 
-    private string $vendorDir;
+    private bool $isSkipNotReadable = false;
 
     public function __construct(string $path, DependencyGraph $dependencyGraph)
     {
@@ -80,8 +80,6 @@ class Config
 
     public function setOutput(string $output): void
     {
-        // TODO need to add check of output parameter is instance of Result Printer
-
         $this->output = $output;
     }
 
@@ -110,14 +108,14 @@ class Config
         $this->skipVendorDirClasses = $skipVendorDirClasses;
     }
 
-    public function getVendorDir(): string
+    public function setSkipNotReadable(bool $flag): void
     {
-        return $this->vendorDir;
+        $this->isSkipNotReadable = $flag;
     }
 
-    public function setVendorDir(string $vendorDir): void
+    public function skipNotReadable(): bool
     {
-        $this->vendorDir = $vendorDir;
+        return $this->isSkipNotReadable;
     }
 
 }

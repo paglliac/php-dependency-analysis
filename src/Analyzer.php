@@ -5,7 +5,6 @@ namespace DependencyAnalysis;
 
 use DependencyAnalysis\Config\Config;
 use DependencyAnalysis\Parser\FileParser;
-use DependencyAnalysis\Parser\ParsedClass;
 use DependencyAnalysis\Result\AnalysisResult;
 use SplFileInfo;
 
@@ -15,11 +14,11 @@ class Analyzer
     {
         $analysisResult = new AnalysisResult();
 
-        $fileIterator = new FileIterator($config->getPath(), $config->getAllowedExtensions());
+        $fileIterator = new FileIterator($config->getPath(), $config->getAllowedExtensions(), $config->skipNotReadable());
         $fileParser = new FileParser($config->getPhpVersion());
 
         foreach ($fileIterator->next() as $file) {
-            $parsedClass = $fileParser->parseFile($file->getPath() . '/' . $file->getFilename());
+            $parsedClass = $fileParser->parseFile($file);
 
             if (!$parsedClass) {
                 continue;
@@ -29,7 +28,7 @@ class Analyzer
                 continue;
             }
 
-            $errors = $this->isFileSatisfyConfig($parsedClass, $config->getDependencyGraph());
+            $errors = $config->getDependencyGraph()->isSatisfy($parsedClass);
 
             if (count($errors) === 0) {
                 $analysisResult->addCorrectFile($parsedClass);
@@ -42,10 +41,6 @@ class Analyzer
         return $analysisResult;
     }
 
-    private function isFileSatisfyConfig(ParsedClass $parsedClass, DependencyGraph $dependencyGraph): array
-    {
-        return $dependencyGraph->isSatisfy($parsedClass);
-    }
 
     private function skipFile(SplFileInfo $file, array $files): bool
     {

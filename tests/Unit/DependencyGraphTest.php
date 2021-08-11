@@ -85,7 +85,7 @@ class DependencyGraphTest extends TestCase
      */
     public function testEmptyDependencyGraphSuccess(string $className, array $dependencyGraphArray, array $usesArray, int $expectedErrorsAmount)
     {
-        $graph = new DependencyGraph($dependencyGraphArray, false, false);
+        $graph = new DependencyGraph($dependencyGraphArray, false, false, '');
 
         $parsedClass = new ParsedClass('phpFile.php', $className, $usesArray);
 

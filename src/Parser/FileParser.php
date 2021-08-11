@@ -44,23 +44,24 @@ use PhpParser\Node\Stmt\Throw_;
 use PhpParser\Node\Stmt\TryCatch;
 use PhpParser\Node\Stmt\Unset_;
 use PhpParser\Node\Stmt\Use_;
+use PhpParser\Node\Stmt\UseUse;
 use PhpParser\Node\Stmt\While_;
 use PhpParser\Node\UnionType;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
+use PhpParser\Node\Stmt\GroupUse;
 use RuntimeException;
+
+use SplFileInfo;
 
 //use \PhpParser\Node\Stmt\Enum_;
 //use \PhpParser\Node\Stmt\EnumCase;
-//use \PhpParser\Node\Stmt\GroupUse;
-//
 //use \PhpParser\Node\Stmt\Property;
 //use \PhpParser\Node\Stmt\PropertyProperty;
 //use \PhpParser\Node\Stmt\Static_;
 //use \PhpParser\Node\Stmt\StaticVar;
 //use \PhpParser\Node\Stmt\Trait_;
 //use \PhpParser\Node\Stmt\TraitUse;
-//use \PhpParser\Node\Stmt\UseUse;
 
 class FileParser
 {
@@ -73,12 +74,12 @@ class FileParser
         $this->parser = (new ParserFactory)->create($phpVersion);
     }
 
-    public function parseFile(string $filePath): ?ParsedClass
+    public function parseFile(SplFileInfo $file): ?ParsedClass
     {
         try {
             $this->process = new ParsingProcess();
 
-            $ast = $this->parser->parse(file_get_contents($filePath));
+            $ast = $this->parser->parse(file_get_contents($file->getRealPath()));
             $firstNode = $ast[0] ?? null;
 
             if (!$firstNode) {
@@ -93,7 +94,7 @@ class FileParser
 
             $this->processStmts($firstNode->stmts);
 
-            return new ParsedClass($filePath, $this->process->className, array_unique($this->process->uses));
+            return new ParsedClass($file->getRealPath(), $this->process->className, $this->collapsedUses());
         } catch (Error $error) {
             throw new RuntimeException("Parse error: {$error->getMessage()}\n", $error->getCode(), $error);
         }
@@ -134,83 +135,84 @@ class FileParser
                 }
 
                 $this->processArgs($stmt->args);
-            } else {
-                if ($stmt instanceof TryCatch) {
-                    $this->processStmts($stmt->stmts);
-                    $this->processStmts($stmt->catches);
-                    $this->processStmts([$stmt->finally]);
-                } elseif ($stmt instanceof Catch_) {
-                    $this->processNamesList(...$stmt->types);
-                    $this->processStmts($stmt->stmts);
-                } elseif ($stmt instanceof Switch_) {
-                    $this->processExpression($stmt->cond);
-                    $this->processStmts($stmt->cases);
-                } elseif ($stmt instanceof Case_) {
-                    $this->processExpression($stmt->cond);
-                    $this->processStmts($stmt->stmts);
-                } elseif ($stmt instanceof ClassMethod) {
-                    foreach ($stmt->params as $param) {
-                        if ($param->type instanceof Name) {
-                            $this->processName($param->type);
-                        }
+            } elseif ($stmt instanceof TryCatch) {
+                $this->processStmts($stmt->stmts);
+                $this->processStmts($stmt->catches);
+                $this->processStmts([$stmt->finally]);
+            } elseif ($stmt instanceof Catch_) {
+                $this->processNamesList(...$stmt->types);
+                $this->processStmts($stmt->stmts);
+            } elseif ($stmt instanceof Switch_) {
+                $this->processExpression($stmt->cond);
+                $this->processStmts($stmt->cases);
+            } elseif ($stmt instanceof Case_) {
+                $this->processExpression($stmt->cond);
+                $this->processStmts($stmt->stmts);
+            } elseif ($stmt instanceof ClassMethod) {
+                foreach ($stmt->params as $param) {
+                    if ($param->type instanceof Name) {
+                        $this->processName($param->type);
                     }
-                    $this->processVariableType($stmt->returnType);
-                    $this->processStmts($stmt->stmts);
-                } elseif ($stmt instanceof Throw_) {
-                    $this->processExpression($stmt->expr);
-                } elseif ($stmt instanceof Expression) {
-                    $this->processExpression($stmt->expr);
-                } elseif (
-                    $stmt instanceof Break_
-                    || $stmt instanceof Continue_
-                    || $stmt instanceof Declare_
-                    || $stmt instanceof DeclareDeclare
-                    || $stmt instanceof Global_
-                    || $stmt instanceof Goto_
-                    || $stmt instanceof HaltCompiler
-                    || $stmt instanceof InlineHTML
-                    || $stmt instanceof Label
-                    || $stmt instanceof Nop
-                    || $stmt instanceof Unset_
-                ) {
-                    continue;
-                } elseif ($stmt instanceof Const_) {
-                    $this->processConsts($stmt->consts);
-                } elseif ($stmt instanceof ClassConst) {
-                    $this->processConsts($stmt->consts);
-                } elseif ($stmt instanceof Echo_) {
-                    $this->processExpressionsList(...$stmt->exprs);
-                } elseif ($stmt instanceof Do_) {
-                    $this->processConsts($stmt->stmts);
-                } elseif ($stmt instanceof Finally_) {
-                    $this->processConsts($stmt->stmts);
-                } elseif ($stmt instanceof For_) {
-                    $this->processExpressionsList(...$stmt->cond);
-                    $this->processExpressionsList(...$stmt->init);
-                    $this->processExpressionsList(...$stmt->loop);
-
-                    $this->processConsts($stmt->stmts);
-                } elseif ($stmt instanceof Foreach_) {
-                    $this->processExpression($stmt->expr);
-
-                    $this->processConsts($stmt->stmts);
-                } elseif ($stmt instanceof Function_) {
-                    $this->processParamsList(...$stmt->params);
-                    $this->processVariableType($stmt->returnType);
-                    $this->processStmts($stmt->stmts);
-                } elseif ($stmt instanceof While_) {
-                    $this->processExpression($stmt->cond);
-                    $this->processStmts($stmt->stmts);
-                } elseif ($stmt instanceof Interface_) {
-                    $this->processStmts($stmt->stmts);
-                    $this->processNamesList(...$stmt->extends);
                 }
-            }
+                $this->processVariableType($stmt->returnType);
+                $this->processStmts($stmt->stmts);
+            } elseif ($stmt instanceof Throw_) {
+                $this->processExpression($stmt->expr);
+            } elseif ($stmt instanceof Expression) {
+                $this->processExpression($stmt->expr);
+            } elseif (
+                $stmt instanceof Break_
+                || $stmt instanceof Continue_
+                || $stmt instanceof Declare_
+                || $stmt instanceof DeclareDeclare
+                || $stmt instanceof Global_
+                || $stmt instanceof Goto_
+                || $stmt instanceof HaltCompiler
+                || $stmt instanceof InlineHTML
+                || $stmt instanceof Label
+                || $stmt instanceof Nop
+                || $stmt instanceof Unset_
+            ) {
+                continue;
+            } elseif ($stmt instanceof Const_) {
+                $this->processConstsList(...$stmt->consts);
+            } elseif ($stmt instanceof ClassConst) {
+                $this->processConstsList(...$stmt->consts);
+            } elseif ($stmt instanceof Echo_) {
+                $this->processExpressionsList(...$stmt->exprs);
+            } elseif ($stmt instanceof Do_) {
+                $this->processStmts($stmt->stmts);
+            } elseif ($stmt instanceof Finally_) {
+                $this->processStmts($stmt->stmts);
+            } elseif ($stmt instanceof For_) {
+                $this->processExpressionsList(...$stmt->cond);
+                $this->processExpressionsList(...$stmt->init);
+                $this->processExpressionsList(...$stmt->loop);
 
-            if (isset($stmt->stmts)) {
+                $this->processStmts($stmt->stmts);
+            } elseif ($stmt instanceof Foreach_) {
+                $this->processExpression($stmt->expr);
+
+                $this->processStmts($stmt->stmts);
+            } elseif ($stmt instanceof Function_) {
+                $this->processParamsList(...$stmt->params);
+                $this->processVariableType($stmt->returnType);
+                $this->processStmts($stmt->stmts);
+            } elseif ($stmt instanceof While_) {
+                $this->processExpression($stmt->cond);
+                $this->processStmts($stmt->stmts);
+            } elseif ($stmt instanceof Interface_) {
+                $this->processStmts($stmt->stmts);
+                $this->processNamesList(...$stmt->extends);
+            } elseif ($stmt instanceof UseUse) {
+                $this->processName($stmt->name);
+            } elseif ($stmt instanceof GroupUse) {
+                $this->processStmts($stmt->uses);
+            } elseif (isset($stmt->stmts)) {
                 $this->processStmts($stmt->stmts);
             }
         }
+
     }
 
     private function processExpressionsList(Expr ...$exprs)
@@ -339,7 +341,7 @@ class FileParser
         }
     }
 
-    private function processConsts(array $consts): void
+    private function processConstsList(Const_ ...$consts): void
     {
         foreach ($consts as $const) {
             if ($const instanceof Expr) {
@@ -348,9 +350,6 @@ class FileParser
         }
     }
 
-    /**
-     * @param Name|null $variableType
-     */
     private function processVariableType($variableType): void
     {
         if ($variableType instanceof NullableType) {
@@ -365,5 +364,28 @@ class FileParser
         if ($variableType instanceof Name) {
             $this->processName($variableType);
         }
+    }
+
+    /**
+     * Remove namespaces from uses array, leave on only classes
+     *
+     * @return array
+     */
+    private function collapsedUses()
+    {
+        $unique = array_unique($this->process->uses);
+
+        sort($unique);
+
+        foreach ($unique as $i => $use) {
+            if ($i == 0) {
+                continue;
+            }
+            if (strpos($use, $unique[$i - 1]) !== false) {
+                unset($unique[$i - 1]);
+            }
+        }
+
+        return array_values($unique);
     }
 }

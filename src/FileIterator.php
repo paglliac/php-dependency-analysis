@@ -15,20 +15,24 @@ class FileIterator
     private string $path;
 
     /**
-     * @var array|string[]
+     * @var string[]
      */
     private array $allowedExtensions;
 
+    private bool $skipNotReadable;
+
     /**
      * @param string $path
-     * @param array|string[] $allowedExtensions
+     * @param string[] $allowedExtensions
+     * @param bool $skipNotReadable
      */
-    public function __construct(string $path, array $allowedExtensions)
+    public function __construct(string $path, array $allowedExtensions, bool $skipNotReadable = false)
     {
         $this->assertDirectoryExists($path);
 
         $this->path = $path;
         $this->allowedExtensions = $allowedExtensions;
+        $this->skipNotReadable = $skipNotReadable;
     }
 
     /**
@@ -40,12 +44,20 @@ class FileIterator
 
         /** @var SplFileInfo $file */
         foreach (new RecursiveIteratorIterator($it) as $file) {
-            if($file->isDir()){
+            if ($file->isDir()) {
                 continue;
             }
 
             if (!in_array($file->getExtension(), $this->allowedExtensions)) {
                 continue;
+            }
+
+            if (!$file->isReadable() && $this->skipNotReadable) {
+                continue;
+            }
+
+            if (!$file->isReadable() && !$this->skipNotReadable) {
+                throw new RuntimeException("File {$file->getRealPath()} is not readable");
             }
 
             yield $file;

@@ -6,7 +6,6 @@ namespace DependencyAnalysis;
 
 use DependencyAnalysis\Parser\ParsedClass;
 use ReflectionClass;
-use RuntimeException;
 use Throwable;
 
 class DependencyGraph
@@ -15,20 +14,15 @@ class DependencyGraph
     private bool $skipNonPresentedNameSpace;
     private bool $skipVendorDir;
     private string $vendorDir;
-    private array $validForAll;
+    private array $validDependencies;
 
-    public function __construct(array $dependencies, bool $failOnNonPresentedNameSpace, bool $skipVendorDir, string $vendorDir = '', array $validForAll = [])
+    public function __construct(array $dependencies, bool $failOnNonPresentedNameSpace, bool $skipVendorDir, string $vendorDir, array $validForAll = [])
     {
         $this->dependencies = $dependencies;
         $this->skipNonPresentedNameSpace = !$failOnNonPresentedNameSpace;
         $this->skipVendorDir = $skipVendorDir;
         $this->vendorDir = $vendorDir;
-
-        if ($skipVendorDir && (empty($vendorDir) || !is_dir($vendorDir))) {
-            // TODO move this check to level config parse
-            throw new RuntimeException("Invalid vendor dir, got '{$vendorDir}'. Use valid vendor dir or disable skip_vendor_dir option");
-        }
-        $this->validForAll = $validForAll;
+        $this->validDependencies = $validForAll;
     }
 
     public function toArray(): array
@@ -81,7 +75,7 @@ class DependencyGraph
 
     private function isUseSatisfyValidDependencies(string $use, array $validDependencies): bool
     {
-        foreach (array_merge($validDependencies, $this->validForAll) as $item) {
+        foreach (array_merge($validDependencies, $this->validDependencies) as $item) {
             if (strpos($use, $item) === 0) {
                 return true;
             }
@@ -107,7 +101,6 @@ class DependencyGraph
 
         } catch (Throwable $e) {
             return false;
-            // TODO need to define not only class but and namespaces
         }
     }
 }

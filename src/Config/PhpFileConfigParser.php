@@ -5,6 +5,7 @@ namespace DependencyAnalysis\Config;
 
 
 use DependencyAnalysis\DependencyGraph;
+use DependencyAnalysis\Result\AnalysisResultPrinter;
 use RuntimeException;
 
 class PhpFileConfigParser implements ConfigParser
@@ -12,7 +13,7 @@ class PhpFileConfigParser implements ConfigParser
     public function parse(string $configFilePath): Config
     {
         if (!file_exists($configFilePath)) {
-            throw new RuntimeException("Config file {$configFilePath} does not exists");
+            throw new RuntimeException("Config file {$configFilePath} does not exist");
         }
 
         /** @noinspection PhpIncludeInspection */
@@ -27,17 +28,12 @@ class PhpFileConfigParser implements ConfigParser
             $skipVendorDir = $configArray['skip_vendor_dir'];
         }
 
-        // This is default vendor dir for project which use analyzer through composer dependencies
-        $vendorDir = __DIR__ . '/../../../../';
-
-        if (array_key_exists('vendor_dir', $configArray)) {
-            $vendorDir = $configArray['vendor_dir'];
-        }
-
         $validForAll = [];
         if (array_key_exists('valid_for_all', $configArray)) {
             $validForAll = $configArray['valid_for_all'];
         }
+
+        $vendorDir = realpath(dirname(PHPUNIT_COMPOSER_INSTALL));
 
         $config = new Config($configArray['path'], new DependencyGraph($configArray['dependencies'], $failOnNonPresentedNameSpace, $skipVendorDir, $vendorDir, $validForAll));
 
@@ -50,6 +46,11 @@ class PhpFileConfigParser implements ConfigParser
         }
 
         if (array_key_exists('output', $configArray)) {
+
+            if (!is_a($configArray['output'], AnalysisResultPrinter::class, true)) {
+                throw new RuntimeException(sprintf("Output type (config key: output) should be instance of %s. Got %s", AnalysisResultPrinter::class, $configArray['output']));
+            }
+
             $config->setOutput($configArray['output']);
         }
 
@@ -57,6 +58,9 @@ class PhpFileConfigParser implements ConfigParser
             $config->setOutputPath($configArray['output_path']);
         }
 
+        if (array_key_exists('skip_not_readable_files', $configArray)) {
+            $config->setSkipNotReadable($configArray['skip_not_readable_files']);
+        }
 
         return $config;
     }

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpFullyQualifiedNameUsageInspection */
 
 return [
     'dependencies' => [
@@ -10,5 +10,6 @@ return [
     'fail_on_non_presented_namespace' => false,
     'php_version' => PhpParser\ParserFactory::PREFER_PHP7,
     'allowed_extensions' => ['php'],
+    'skip_vendor_dir' => true,
     'output' => \DependencyAnalysis\Result\StdOutAnalysisResultPrinter::class,
 ];
