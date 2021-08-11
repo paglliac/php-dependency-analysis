@@ -1,10 +1,49 @@
 # PHP Dependency analyzer
-
-PHP DA oriented on analysis of project component dependencies
-
 <p>
 	<a href="https://github.com/paglliac/php-dependency-analysis/actions"><img src="https://github.com/paglliac/php-dependency-analysis/actions/workflows/php.yml/badge.svg" alt="Build Status"></a>
 </p>
+
+PHP DA is tool for check and support dependencies inside your project clear.
+
+For example:
+- You have project with 3 root namespaces: Domain, Application, Infrastructure
+- You want to be sure dependencies in your project defined as graph
+```php
+[
+    'dependencies' => [
+        '\Domain' => null,
+        '\Application' => ['\Domain'],
+        '\Infrastructure' => ['\Domain', '\Application']
+    ]
+];
+```
+That means all classes from **Domain** namespace should use only classes from this namespace, and possibly vendor (it s configured).
+
+All classes from **Application** can use classes from **Domain** and **Application** namespaces, but not from **Infrastructure**, etc
+
+If some classes using dependencies not satisfied defined dependency graph, you give errors in report:
+
+```
+Have been analyzed 4 files
+You have dependency problems in 2 files in your project:
+
+Class \Application\TrackingService have errors:
+    - Class \Application\TrackingService using class \Infrastructure\ShipImplementation which not satisfy dependency graph
+
+Class \Domain\Cargo have errors:
+    - Class \Domain\Cargo using class \Application\TrackingService which not satisfy dependency graph
+    - Class \Domain\Cargo using class \Infrastructure\ShipImplementation which not satisfy dependency graph
+
+```
+
+## Use cases
+
+It can be useful in some cases for example:
+- You want to extract part of your application in separate service, you define valid dependencies and run php-da for investigate workload
+- You want to support low coupling in your application, you define valid dependencies and run php-da on your CI server for every MR, only for changed files
+- You want to make visible structure changes of your application for all developers, now it is visible in php-da config  
+
+
 
 ## Quick start
 
@@ -99,7 +138,7 @@ Options:
 - `-c` or `--config` is required option with the relative path to config file
 
 Arguments:
-- `[files filter]` list of files for analysis, it's usefull to use in CI combine with --diff 
+- `[files filter]` list of files for analysis, it's useful to use in CI combine with --diff 
 
 
 
