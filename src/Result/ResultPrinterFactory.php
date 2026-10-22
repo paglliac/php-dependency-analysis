@@ -10,7 +10,8 @@ class ResultPrinterFactory
 {
     public function make(Config $config): AnalysisResultPrinter
     {
-        if ($config->getOutput() === StdOutAnalysisResultPrinter::class) {
+        // `output` is optional in the config file; default to stdout.
+        if ($config->getOutput() === null || $config->getOutput() === StdOutAnalysisResultPrinter::class) {
             return new StdOutAnalysisResultPrinter();
         }
 

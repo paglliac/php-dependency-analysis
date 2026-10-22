@@ -19,7 +19,7 @@ class Config
      */
     private array $allowedExtensions = ['php'];
 
-    private string $output;
+    private ?string $output = null;
 
     private string $outputPath;
 
@@ -83,7 +83,7 @@ class Config
         $this->output = $output;
     }
 
-    public function getOutput(): string
+    public function getOutput(): ?string
     {
         return $this->output;
     }
